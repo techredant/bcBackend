@@ -15,7 +15,7 @@ app.get("/api", (_, res) => res.json({ message: "API running" }));
 // Routes
 app.use("/api/chat", chatRoutes);
 app.use("/api/ai-reply", aiReplyRoute);
-app.use("/api/stream", streamRoutes); // ✅ add this
+app.use("/api", streamRoutes); // ✅ add this
 
 // Optional root
 app.get("/", (_, res) => res.send("Backend running"));
