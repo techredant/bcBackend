@@ -1,31 +1,28 @@
+// src/routes/stream.routes.js
 import express from "express";
-import StreamChat from "stream-chat";
-
+import { StreamChat } from "stream-chat"; // <-- note no "-expo"
 const router = express.Router();
 
-// Server-side Stream client
-const serverClient = StreamChat.getInstance(
+// Initialize Stream client (server-side)
+const serverClient = new StreamChat(
     process.env.STREAM_API_KEY,
     process.env.STREAM_API_SECRET
 );
 
-// Example: GET /api/stream-token/:userId
 router.get("/stream-token/:userId", async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
     try {
-        const { userId } = req.params;
-
-        if (!userId) return res.status(400).json({ error: "userId required" });
-
-        // Ensure user exists on Stream
-        await serverClient.upsertUser({ id: userId, name: userId });
-
-        // Generate a token for the user
+        // Generate a user token
         const token = serverClient.createToken(userId);
-
-        res.json({ token });
+        return res.json({ token });
     } catch (err) {
         console.error("Stream token error:", err);
-        res.status(500).json({ error: "Failed to generate token" });
+        return res.status(500).json({ error: "Failed to create Stream token" });
     }
 });
 
