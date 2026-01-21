@@ -1,3 +1,4 @@
+// backend/src/routes/aiReply.routes.js
 import express from "express";
 import { StreamChat } from "stream-chat";
 

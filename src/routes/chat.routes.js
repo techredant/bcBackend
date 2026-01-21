@@ -1,15 +1,15 @@
 import express from "express";
-
 const router = express.Router();
 
-router.post("/chat", async (req, res) => {
+// ✅ Use root '/' here
+router.post("/", async (req, res) => {
     try {
         const { messages } = req.body;
-
         if (!messages || !Array.isArray(messages)) {
             return res.status(400).json({ error: "Messages required" });
         }
 
+        // Call Cloudflare AI
         const cfResponse = await fetch(
             `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/meta/llama-3.1-8b-instruct`,
             {
@@ -35,13 +35,11 @@ router.post("/chat", async (req, res) => {
         }
 
         const result = await cfResponse.json();
-
-        const aiText =
-            result?.result?.response ?? "No response from AI";
+        const aiText = result?.result?.response ?? "No response from AI";
 
         res.json({ reply: aiText });
-    } catch (error) {
-        console.error("Chat error:", error);
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ error: "AI request failed" });
     }
 });
