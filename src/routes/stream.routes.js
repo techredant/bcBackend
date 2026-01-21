@@ -30,28 +30,29 @@
 
 
 // backend/src/routes/stream.routes.js
+
+
 import express from "express";
 import { StreamChat } from "stream-chat";
 
 const router = express.Router();
 
+// Initialize server-side Stream client
 const serverClient = new StreamChat(
     process.env.STREAM_API_KEY,
     process.env.STREAM_API_SECRET
 );
 
-// Temporary dummy token for any userId
+// Dummy / stream-token route
 router.get("/stream-token/:userId", async (req, res) => {
     const { userId } = req.params;
 
-    // Fallback to a dummy ID if none provided
-    const effectiveUserId = userId || "test-user";
-
     try {
-        const token = serverClient.createToken(effectiveUserId);
-        res.json({ token });
+        // Create token for dummy user
+        const token = serverClient.createToken(userId || "dummy-user");
+        res.json({ token }); // Must return JSON
     } catch (err) {
-        console.error(err);
+        console.error("Stream token error:", err);
         res.status(500).json({ error: "Failed to create token" });
     }
 });
