@@ -15,6 +15,10 @@ app.use(express.json());
 app.use("/api/chat", chatRoutes);
 app.use("/api", aiReplyRoute);
 
+app.get("/", (_, res) => {
+    res.send( "Hello from backend Siasa App" );
+});
+
 // Health check
 app.get("/api", (_, res) => {
     res.send("API running on Vercel");
