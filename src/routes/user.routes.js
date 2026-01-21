@@ -27,8 +27,8 @@ router.post("/create-user", async (req, res) => {
             email,
             firstName,
             lastName,
-            nickName,
             image,
+            nickName,
             provider,
             accountType,
         } = req.body;
@@ -37,38 +37,37 @@ router.post("/create-user", async (req, res) => {
             return res.status(400).json({ message: "Missing clerkId or email" });
         }
 
-        // Check for existing user
         let user = await User.findOne({ clerkId });
 
         if (user) {
-            // Update existing user
-            user.firstName = firstName || user.firstName;
-            user.lastName = lastName || user.lastName;
-            user.nickName = nickName || user.nickName || `user_${Date.now()}`;
-            user.image = image || user.image;
-            user.provider = provider || user.provider;
-            user.accountType = accountType || user.accountType;
+            if (firstName) user.firstName = firstName;
+            if (lastName) user.lastName = lastName;
+            if (nickName) user.nickName = nickName;
+            if (image) user.image = image;
+            if (provider) user.provider = provider;
+            if (accountType) user.accountType = accountType;
 
             await user.save();
-            return res.status(200).json({ success: true, user, message: "User updated" });
+            return res
+                .status(200)
+                .json({ success: true, user, message: "User updated" });
         }
 
-        // Create new user
         user = await User.create({
             clerkId,
             email,
             firstName: firstName || "",
             lastName: lastName || "",
-            nickName: nickName || `user_${Date.now()}`,
+            nickName: nickName || "",
             image: image || "",
-            provider: provider || "google",
+            provider: provider || "clerk",
             accountType: accountType || "Personal Account",
         });
 
         res.status(201).json({ success: true, user, message: "User created" });
     } catch (err) {
-        console.error("Failed to save user:", err);
-        res.status(500).json({ error: err.message });
+        console.error("Error creating/updating user:", err);
+        res.status(500).json({ message: "Server error" });
     }
 });
 

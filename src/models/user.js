@@ -1,4 +1,3 @@
-// models/user.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -10,7 +9,6 @@ const userSchema = new mongoose.Schema(
     nickName: { type: String, unique: true },
     image: { type: String },
 
-    // 🟢 IEBC Location
     county: { type: String },
     constituency: { type: String },
     ward: { type: String },
@@ -21,14 +19,12 @@ const userSchema = new mongoose.Schema(
 
     provider: { type: String, default: "clerk" },
 
-    // ✅ Clerk IDs instead of ObjectIds
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    // Store Clerk IDs instead of ObjectIds
+    followers: [{ type: String }],
+    following: [{ type: String }],
   },
   { timestamps: true }
 );
 
-// Avoid model overwrite in dev (Next.js / Vercel hot reload)
 const User = mongoose.models.User || mongoose.model("User", userSchema);
-
 export default User;
