@@ -3,7 +3,7 @@ import express from "express";
 import Post from "../models/post.js";
 import User from "../models/user.js";
 import Comment from "../models/comment.js"; // ✅ Make sure you have a Comment model
-import kenyaData from "../assets/iebc.json" assert { type: "json" };
+import kenyaData from "../../assets/data/iebc.json" assert { type: "json" };
 
 const createPostRouter = (io) => {
     const router = express.Router();
