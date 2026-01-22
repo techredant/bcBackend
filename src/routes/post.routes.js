@@ -3,15 +3,18 @@ import express from "express";
 import Post from "../models/post.js";
 import User from "../models/user.js";
 import Comment from "../models/comment.js"; // ✅ Make sure you have a Comment model
-import kenyaData from "../../assets/data/iebc.json" assert { type: "json" };
+import fs from "fs";
+import path from "path";
 
 const createPostRouter = (io) => {
     const router = express.Router();
 
+    const dataPath = path.resolve("../../assets/data/iebc.json");
+    const kenyaData = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
+
     const getRoomName = (levelType, levelValue) =>
         `level-${levelType}-${levelValue || "all"}`;
 
-    // Helper: collect related level names
     const getRelatedLevels = (levelType, levelValue) => {
         if (levelType === "home") {
             const counties = kenyaData.counties.map((c) => c.name);
@@ -23,6 +26,7 @@ const createPostRouter = (io) => {
             );
             return [...counties, ...constituencies, ...wards];
         }
+
 
         if (levelType === "county") {
             const county = kenyaData.counties.find((c) => c.name === levelValue);
