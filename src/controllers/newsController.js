@@ -1,6 +1,6 @@
-const News = require("../models/news");
+import News from "../models/news.js";
 
-exports.getAllNews = async (req, res) => {
+export const getAllNews = async (req, res) => {
   try {
     const news = await News.find().sort({ createdAt: -1 });
     res.json(news);
@@ -10,7 +10,7 @@ exports.getAllNews = async (req, res) => {
   }
 };
 
-exports.createNews = async (req, res) => {
+export const createNews = async (req, res) => {
   try {
     const { title, content, image } = req.body;
     const news = new News({ title, content, image });
