@@ -43,6 +43,7 @@ router.post("/create-user", async (req, res) => {
     let user = await User.findOne({ clerkId });
     console.log("Existing user:", user);
 
+    // -------- UPDATE --------
     if (user) {
       if (firstName) user.firstName = firstName;
       if (lastName) user.lastName = lastName;
@@ -52,11 +53,15 @@ router.post("/create-user", async (req, res) => {
       if (accountType) user.accountType = accountType;
 
       await user.save();
-      return res
-        .status(200)
-        .json({ success: true, user, message: "User updated" });
+
+      return res.status(200).json({
+        success: true,
+        user,
+        message: "User updated",
+      });
     }
 
+    // -------- CREATE --------
     user = await User.create({
       clerkId,
       email,
@@ -69,13 +74,21 @@ router.post("/create-user", async (req, res) => {
     });
 
     console.log("Created new user:", user);
-    res.status(201).json({ success: true, user, message: "User created" });
+
+    res.status(201).json({
+      success: true,
+      user,
+      message: "User created",
+    });
+
   } catch (err) {
     console.error("❌ Error creating/updating user:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
   }
 });
-
 
 
 // --- Helper: Create video token ---
