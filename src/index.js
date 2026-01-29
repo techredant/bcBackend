@@ -3,8 +3,9 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
+import mongoose from "mongoose";
 
-// Routes
+// ------------------- Routes -------------------
 import chatRoutes from "./routes/chat.routes.js";
 import aiReplyRoute from "./routes/aiReply.routes.js";
 import streamRoutes from "./routes/stream.routes.js";
@@ -45,23 +46,45 @@ app.use("/api/news", newsRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST", "DELETE"],
-    },
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "DELETE"],
+  },
 });
 
 // Make io available in routes
 app.set("io", io);
 
 io.on("connection", (socket) => {
-    console.log("New client connected:", socket.id);
+  console.log("New client connected:", socket.id);
 
-    socket.on("disconnect", () => {
-        console.log("Client disconnected:", socket.id);
-    });
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
 });
 
-// ------------------- Start Server -------------------
+// ------------------- MongoDB + Start Server -------------------
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const startServer = async () => {
+  try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error("MONGODB_URI not found in environment variables");
+    }
+
+    await mongoose.connect(process.env.MONGODB_URI, {
+      dbName: "broadcast", // optional but recommended
+    });
+
+    console.log("✅ MongoDB Connected");
+
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("❌ Failed to start server:", err.message);
+    process.exit(1);
+  }
+};
+
+startServer();
