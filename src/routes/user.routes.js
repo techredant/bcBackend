@@ -21,55 +21,61 @@ const STREAM_VIDEO_SECRET = process.env.STREAM_VIDEO_SECRET;
 
 // ------------------- CREATE OR UPDATE USER -------------------
 router.post("/create-user", async (req, res) => {
-    try {
-        const {
-            clerkId,
-            email,
-            firstName,
-            lastName,
-            image,
-            nickName,
-            provider,
-            accountType,
-        } = req.body;
+  try {
+    console.log("🔥 Incoming request body:", req.body);
 
-        if (!clerkId || !email) {
-            return res.status(400).json({ message: "Missing clerkId or email" });
-        }
+    const {
+      clerkId,
+      email,
+      firstName,
+      lastName,
+      image,
+      nickName,
+      provider,
+      accountType,
+    } = req.body;
 
-        let user = await User.findOne({ clerkId });
-
-        if (user) {
-            if (firstName) user.firstName = firstName;
-            if (lastName) user.lastName = lastName;
-            if (nickName) user.nickName = nickName;
-            if (image) user.image = image;
-            if (provider) user.provider = provider;
-            if (accountType) user.accountType = accountType;
-
-            await user.save();
-            return res
-                .status(200)
-                .json({ success: true, user, message: "User updated" });
-        }
-
-        user = await User.create({
-            clerkId,
-            email,
-            firstName: firstName || "",
-            lastName: lastName || "",
-            nickName: nickName || "",
-            image: image || "",
-            provider: provider || "clerk",
-            accountType: accountType || "Personal Account",
-        });
-
-        res.status(201).json({ success: true, user, message: "User created" });
-    } catch (err) {
-        console.error("Error creating/updating user:", err);
-        res.status(500).json({ message: "Server error" });
+    if (!clerkId || !email) {
+      console.warn("Missing clerkId or email");
+      return res.status(400).json({ message: "Missing clerkId or email" });
     }
+
+    let user = await User.findOne({ clerkId });
+    console.log("Existing user:", user);
+
+    if (user) {
+      if (firstName) user.firstName = firstName;
+      if (lastName) user.lastName = lastName;
+      if (nickName) user.nickName = nickName;
+      if (image) user.image = image;
+      if (provider) user.provider = provider;
+      if (accountType) user.accountType = accountType;
+
+      await user.save();
+      return res
+        .status(200)
+        .json({ success: true, user, message: "User updated" });
+    }
+
+    user = await User.create({
+      clerkId,
+      email,
+      firstName: firstName || "",
+      lastName: lastName || "",
+      nickName: nickName || "",
+      image: image || "",
+      provider: provider || "clerk",
+      accountType: accountType || "Personal Account",
+    });
+
+    console.log("Created new user:", user);
+    res.status(201).json({ success: true, user, message: "User created" });
+  } catch (err) {
+    console.error("❌ Error creating/updating user:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 });
+
 
 
 // --- Helper: Create video token ---
